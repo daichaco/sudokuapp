@@ -69,6 +69,7 @@ private struct CellView: View {
         let sel = vm.selected
         let color: Color = {
             if vm.mistakes.contains(index) { return .red.opacity(0.30) }
+            if vm.isSetup && vm.uncertain.contains(index) { return .orange.opacity(0.45) }
             if vm.hintTarget == index { return .green.opacity(0.45) }
             if vm.hintRelated.contains(index) { return .yellow.opacity(0.35) }
             if sel == index { return .blue.opacity(0.30) }

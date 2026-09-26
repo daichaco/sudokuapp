@@ -81,3 +81,68 @@ let hard = "80000000000360000007009020005000700000004570000010003000100006800850
     #expect(b.candidates(at: 2) == [1, 2, 4])   // 1行3列(0始まり2)
     #expect(b.candidates(at: 0).isEmpty)        // 埋まっているマス
 }
+
+// MARK: 読み違いの自動補正
+
+@Test func correctorFixesSingleMisread() throws {
+    let truth = try #require(Board(string: easy))
+    var read = truth
+    // 4 を 6 と読み違えた、という状況を作る(同じ行に 6 がなければ矛盾しないので、行に 6 がある位置を選ぶ)
+    let idx = try #require((0..<81).first { i in truth.cells[i] == 4 })
+    read.cells[idx] = 6
+    let alternatives: [Int: [DigitCandidate]] = [idx: [DigitCandidate(digit: 4, cost: 3), DigitCandidate(digit: 1, cost: 40)]]
+    let fix = try #require(BoardCorrector.correct(read, alternatives: alternatives))
+    #expect(fix.board == truth)
+    #expect(fix.changed == [idx])
+}
+
+@Test func correctorPicksTheLikelierOfSeveralFixes() throws {
+    let truth = try #require(Board(string: easy))
+    var read = truth
+    let idx = try #require((0..<81).first { truth.cells[$0] == 4 })
+    read.cells[idx] = 6
+    // 次点に、正しくない候補(1)のほうが有力な形で並んでいても、解がちょうど1つになるものを選ぶ
+    let alternatives: [Int: [DigitCandidate]] = [idx: [DigitCandidate(digit: 1, cost: 1), DigitCandidate(digit: 4, cost: 5)]]
+    let fix = try #require(BoardCorrector.correct(read, alternatives: alternatives))
+    #expect(fix.board == truth)
+}
+
+@Test func correctorFixesTwoMisreads() throws {
+    let truth = try #require(Board(string: easy))
+    var read = truth
+    let fours = (0..<81).filter { truth.cells[$0] == 4 }
+    let a = fours[0], b = fours[1]
+    read.cells[a] = 6; read.cells[b] = 9
+    let alternatives: [Int: [DigitCandidate]] = [a: [DigitCandidate(digit: 4, cost: 2)], b: [DigitCandidate(digit: 4, cost: 4)]]
+    let fix = try #require(BoardCorrector.correct(read, alternatives: alternatives))
+    #expect(fix.board == truth)
+    #expect(Set(fix.changed) == [a, b])
+}
+
+@Test func correctorLeavesSolvableBoardAlone() throws {
+    let truth = try #require(Board(string: easy))
+    let idx = try #require((0..<81).first { truth.cells[$0] == 4 })
+    let alternatives: [Int: [DigitCandidate]] = [idx: [DigitCandidate(digit: 6, cost: 1)]]
+    #expect(BoardCorrector.correct(truth, alternatives: alternatives) == nil)
+}
+
+@Test func correctorGivesUpWithoutAGoodCandidate() throws {
+    let truth = try #require(Board(string: easy))
+    var read = truth
+    let idx = try #require((0..<81).first { truth.cells[$0] == 4 })
+    read.cells[idx] = 6
+    // 正解の 4 が候補に無いなら、無理に直さない
+    let alternatives: [Int: [DigitCandidate]] = [idx: [DigitCandidate(digit: 2, cost: 5)]]
+    #expect(BoardCorrector.correct(read, alternatives: alternatives) == nil)
+}
+
+@Test func correctorFixesDuplicateOnSparseBoard() throws {
+    // 数字が少なく解が複数ある盤面でも、重複(6が2つ)があれば、次点の候補で直す
+    var truth = Board()
+    for (i, v) in [(1, 5), (2, 8), (10, 1), (11, 7), (12, 6), (20, 2), (21, 3), (56, 9), (65, 4)] { truth.cells[i] = v }
+    var read = truth
+    read.cells[56] = 6; read.cells[58] = 6            // 同じ行に 6 が2つ(56 は本当は 9)
+    let fix = try #require(BoardCorrector.correct(read, alternatives: [56: [DigitCandidate(digit: 9, cost: 2)]]))
+    #expect(fix.changed == [56])
+    #expect(fix.board.cells[56] == 9)
+}
