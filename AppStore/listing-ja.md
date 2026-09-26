@@ -58,8 +58,8 @@ App Store Connect の各欄にそのまま貼り付けられます。文字数�
 - セカンダリ: `ユーティリティ`(任意)
 
 ## URL
-- サポートURL: 〔必須。GitHub のリポジトリページでも可: https://github.com/daichaco/sudokuapp 〕
-- プライバシーポリシーURL: 〔必須。`docs/privacy-policy.md` を公開した URL。手順は TODO を参照〕
+- サポートURL: `https://github.com/daichaco/sudokuapp/issues`(または `https://github.com/daichaco/sudokuapp`)
+- プライバシーポリシーURL: `https://daichaco.github.io/sudokuapp/privacy-policy`(表示を確認済み)
 - マーケティングURL: 空欄でよい
 
 ## 著作権

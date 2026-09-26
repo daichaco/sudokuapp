@@ -19,7 +19,7 @@
 - ☐ GitHub の Settings → General → Features で **Issues がオン**になっていることを確認する(問い合わせ先のリンクが使えなくなるため)。
 - ☐ GitHub に push する。
 - ☐ GitHub の `daichaco/sudokuapp` → Settings → Pages → Source を「Deploy from a branch」、Branch を `main`、フォルダを `/docs` にして保存する。
-- ☐ 公開された URL を控える(たとえば `https://daichaco.github.io/sudokuapp/privacy-policy`)。開いて表示できるか確認する。
+- ✅ 公開された URL: `https://daichaco.github.io/sudokuapp/privacy-policy`(表示を確認済み)。Issues のページも開けることを確認済み。
 - 注意: リポジトリが非公開(private)だと、無料プランでは Pages を使えない。その場合は別の方法(自分のサイト、Notion の公開ページなど)で公開する。
 
 ## 3. Xcode の署名を設定する(登録の承認後)
