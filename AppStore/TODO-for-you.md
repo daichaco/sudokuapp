@@ -5,7 +5,7 @@
 
 ## 0. 先に決めること(すぐ終わる)
 - ☐ **公開名義**(アプリの提供者として表示される名前)を決める。個人なら本名になる。Apple Developer Program の登録名がそのまま表示される。
-- ☐ **問い合わせ用のメールアドレス**を決める(プライバシーポリシーとサポートに載る)。
+- ☐ 問い合わせ先: プライバシーポリシーは GitHub の Issues にした(メールを載せたい場合だけ変更する)。App Store Connect の審査用連絡先(氏名・電話・メール)は別に必要(公開されない)。
 - ☐ **アプリ名**を決める(第一候補: 数独ヘルパー)。他のアプリと重複すると使えない。手順4で分かる。
 
 ## 1. Apple Developer Program に登録する(いちばん時間がかかる)
@@ -15,7 +15,8 @@
 - 承認されるまでは、以降の手順(特に3〜6)を進められない。
 
 ## 2. プライバシーポリシーを公開する(URL が必須)
-- ☐ `docs/privacy-policy.md` の `〔あなたの名前〕` と `〔連絡先のメールアドレス〕` を書き換える(日本語・英語の両方。`〔 〕` で検索できる)。
+- ☐ `docs/privacy-policy.md` の内容を確認する(提供者名は taiki、問い合わせ先は GitHub の Issues にしてある)。変えたい場合は日本語・英語の両方を書き換える。
+- ☐ GitHub の Settings → General → Features で **Issues がオン**になっていることを確認する(問い合わせ先のリンクが使えなくなるため)。
 - ☐ GitHub に push する。
 - ☐ GitHub の `daichaco/sudokuapp` → Settings → Pages → Source を「Deploy from a branch」、Branch を `main`、フォルダを `/docs` にして保存する。
 - ☐ 公開された URL を控える(たとえば `https://daichaco.github.io/sudokuapp/privacy-policy`)。開いて表示できるか確認する。

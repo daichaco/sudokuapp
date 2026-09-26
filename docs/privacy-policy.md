@@ -4,7 +4,7 @@
 
 ## 日本語
 
-「数独ヘルパー」(以下「本アプリ」)は、〔あなたの名前〕(以下「開発者」)が提供する、数独を解くのを手伝うアプリです。本アプリにおけるお客様の情報の取り扱いは、次のとおりです。
+「数独ヘルパー」(以下「本アプリ」)は、taiki(以下「開発者」)が提供する、数独を解くのを手伝うアプリです。本アプリにおけるお客様の情報の取り扱いは、次のとおりです。
 
 ### 収集する情報
 開発者は、本アプリを通じて、お客様の個人情報を収集しません。アカウント登録、広告、アクセス解析、外部のサービスへの送信は、ありません。
@@ -28,13 +28,13 @@
 本ポリシーを変更する場合は、このページで公開します。
 
 ### お問い合わせ
-〔連絡先のメールアドレス〕
+GitHub の Issues: https://github.com/daichaco/sudokuapp/issues
 
 ---
 
 ## English
 
-"数独ヘルパー" (the "App") is a sudoku helper app provided by 〔your name〕 (the "Developer").
+"数独ヘルパー" (the "App") is a sudoku helper app provided by taiki (the "Developer").
 
 ### Information we collect
 The Developer does not collect any personal information through the App. The App has no account registration, no advertising, no analytics, and does not send your data to any server.
@@ -57,4 +57,4 @@ Because the App does not collect personal information, it does not collect infor
 If this policy changes, the updated version will be published on this page.
 
 ### Contact
-〔your contact email〕
+GitHub Issues: https://github.com/daichaco/sudokuapp/issues
