@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sudoku</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--line:#c5cad6;--thick:#2b3245;--accent:#3b6df0;--sel:#dbe5ff;--peer:#eef2ff;--same:#c3d3ff;--err:#e5484d;--given:#1c2233;--user:#3b6df0;--text:#1c2233}
+@media(prefers-color-scheme:dark){:root{--bg:#12151d;--card:#1b2030;--line:#3a4157;--thick:#9aa4c2;--accent:#6c93ff;--sel:#2c3a68;--peer:#232a40;--same:#34457c;--err:#ff6b70;--given:#e8ecf8;--user:#7fa2ff;--text:#e8ecf8}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;display:flex;justify-content:center;padding:16px}
+main{width:100%;max-width:460px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+h1{font-size:22px;margin:0}
+.info{display:flex;gap:12px;font-variant-numeric:tabular-nums;font-size:14px;opacity:.85}
+select,button{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+#board{display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1;background:var(--card);border:2px solid var(--thick);border-radius:6px;overflow:hidden}
+.c{position:relative;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,6vw,28px);border:1px solid var(--line);cursor:pointer;user-select:none}
+.c:nth-child(9n+3),.c:nth-child(9n+6){border-right:2px solid var(--thick)}
+.c:nth-child(n+19):nth-child(-n+27),.c:nth-child(n+46):nth-child(-n+54){border-bottom:2px solid var(--thick)}
+.c.peer{background:var(--peer)}.c.same{background:var(--same)}.c.sel{background:var(--sel);outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
+.c.given{color:var(--given);font-weight:700}.c.user{color:var(--user)}.c.err{color:var(--err)}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);width:100%;height:100%;font-size:clamp(8px,2.4vw,11px);opacity:.7;padding:1px;text-align:center;align-items:center}
+#pad{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-top:14px}
+#pad button{padding:12px 0;font-size:20px;position:relative}
+#pad small{position:absolute;right:4px;bottom:1px;font-size:10px;opacity:.6}
+#pad button:disabled{opacity:.25;cursor:default}
+#msg{text-align:center;height:24px;margin-top:10px;font-weight:600;color:var(--accent)}
+.hint{font-size:12px;opacity:.6;text-align:center;margin-top:6px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Sudoku</h1>
+    <div class="info"><span id="timer">0:00</span><span id="mistakes">Mistakes 0</span></div>
+  </header>
+  <div class="bar">
+    <select id="diff"><option value="36">Easy</option><option value="46" selected>Medium</option><option value="52">Hard</option><option value="56">Expert</option></select>
+    <button id="new">New</button>
+    <button id="notes">Notes</button>
+    <button id="undo">Undo</button>
+    <button id="hintBtn">Hint</button>
+  </div>
+  <div id="board"></div>
+  <div id="pad"></div>
+  <div id="msg"></div>
+  <div class="hint">Keys: 1–9 enter · Backspace erase · N notes · arrows move</div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+let sol,puz,cur,notes,given,sel=-1,noteMode=false,mistakes=0,secs=0,timer,hist=[],done=false;
+
+// ---- generator ----
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function ok(g,i,v){const r=i/9|0,c=i%9;for(let k=0;k<9;k++){if(g[r*9+k]===v||g[k*9+c]===v)return false}
+  const br=r-r%3,bc=c-c%3;for(let a=0;a<3;a++)for(let b=0;b<3;b++)if(g[(br+a)*9+bc+b]===v)return false;return true}
+function fill(g){const i=g.indexOf(0);if(i<0)return true;for(const v of shuffle([1,2,3,4,5,6,7,8,9]))if(ok(g,i,v)){g[i]=v;if(fill(g))return true;g[i]=0}return false}
+function count(g,lim){ // count solutions up to lim, MRV heuristic
+  let best=-1,bc=null;
+  for(let i=0;i<81;i++)if(!g[i]){const c=[];for(let v=1;v<=9;v++)if(ok(g,i,v))c.push(v);if(!c.length)return 0;if(!bc||c.length<bc.length){best=i;bc=c;if(c.length===1)break}}
+  if(best<0)return 1;let n=0;for(const v of bc){g[best]=v;n+=count(g,lim-n);g[best]=0;if(n>=lim)break}return n}
+function generate(remove){
+  const s=Array(81).fill(0);fill(s);const p=s.slice();let removed=0;
+  for(const i of shuffle([...Array(81).keys()])){if(removed>=remove)break;const b=p[i];p[i]=0;if(count(p.slice(),2)!==1)p[i]=b;else removed++}
+  return[s,p]}
+
+// ---- game ----
+function newGame(){
+  $('#msg').textContent='Generating…';
+  setTimeout(()=>{
+    [sol,puz]=generate(+$('#diff').value);cur=puz.slice();given=puz.map(v=>v>0);
+    notes=Array.from({length:81},()=>new Set());hist=[];mistakes=0;secs=0;sel=-1;done=false;
+    clearInterval(timer);timer=setInterval(()=>{if(!done){secs++;renderInfo()}},1000);
+    $('#msg').textContent='';render();renderInfo()},20)}
+function renderInfo(){$('#timer').textContent=Math.floor(secs/60)+':'+String(secs%60).padStart(2,'0');$('#mistakes').textContent='Mistakes '+mistakes}
+function render(){
+  const b=$('#board');b.innerHTML='';const sv=sel>=0?cur[sel]:0;
+  const cnt=Array(10).fill(0);cur.forEach(v=>cnt[v]++);
+  for(let i=0;i<81;i++){
+    const d=document.createElement('div');d.className='c';
+    const r=i/9|0,c=i%9;
+    if(sel>=0){const sr=sel/9|0,sc=sel%9;
+      if(i===sel)d.classList.add('sel');
+      else if(sv&&cur[i]===sv)d.classList.add('same');
+      else if(sr===r||sc===c||(sr/3|0)===(r/3|0)&&(sc/3|0)===(c/3|0))d.classList.add('peer')}
+    if(cur[i]){d.textContent=cur[i];d.classList.add(given[i]?'given':'user');if(!given[i]&&cur[i]!==sol[i])d.classList.add('err')}
+    else if(notes[i].size){const n=document.createElement('div');n.className='notes';for(let v=1;v<=9;v++){const s=document.createElement('span');s.textContent=notes[i].has(v)?v:'';n.append(s)}d.append(n)}
+    d.onclick=()=>{sel=i;render()};b.append(d)}
+  const pad=$('#pad');pad.innerHTML='';
+  for(let v=1;v<=9;v++){const k=document.createElement('button');k.textContent=v;k.disabled=cnt[v]>=9;
+    const s=document.createElement('small');s.textContent=9-cnt[v];k.append(s);k.onclick=()=>enter(v);pad.append(k)}
+  $('#notes').classList.toggle('on',noteMode)}
+function push(){hist.push({cur:cur.slice(),notes:notes.map(s=>new Set(s)),mistakes})}
+function enter(v){
+  if(done||sel<0||given[sel])return;push();
+  if(noteMode){if(cur[sel])return hist.pop();const n=notes[sel];n.has(v)?n.delete(v):n.add(v)}
+  else{if(cur[sel]===v){cur[sel]=0}else{cur[sel]=v;notes[sel].clear();
+      if(v!==sol[sel]){mistakes++;renderInfo()}
+      else{const r=sel/9|0,c=sel%9;for(let i=0;i<81;i++){const ir=i/9|0,ic=i%9;if(ir===r||ic===c||(ir/3|0)===(r/3|0)&&(ic/3|0)===(c/3|0))notes[i].delete(v)}}}}
+  render();check()}
+function erase(){if(done||sel<0||given[sel])return;push();cur[sel]=0;notes[sel].clear();render()}
+function check(){if(cur.every((v,i)=>v===sol[i])){done=true;$('#msg').textContent=`🎉 Solved in ${$('#timer').textContent} with ${mistakes} mistake${mistakes==1?'':'s'}!`}}
+$('#new').onclick=newGame;
+$('#notes').onclick=()=>{noteMode=!noteMode;render()};
+$('#undo').onclick=()=>{if(done||!hist.length)return;({cur,notes,mistakes}=hist.pop());render();renderInfo()};
+$('#hintBtn').onclick=()=>{if(done)return;let i=sel>=0&&!given[sel]&&cur[sel]!==sol[sel]?sel:cur.findIndex((v,k)=>v!==sol[k]);
+  if(i<0)return;push();sel=i;cur[i]=sol[i];given[i]=false;notes[i].clear();render();check()};
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='SELECT')return;
+  if(/^[1-9]$/.test(e.key))enter(+e.key);
+  else if(e.key==='Backspace'||e.key==='Delete'||e.key==='0')erase();
+  else if(e.key==='n'||e.key==='N'){noteMode=!noteMode;render()}
+  else if((e.ctrlKey||e.metaKey)&&e.key==='z'){$('#undo').click()}
+  else if(e.key.startsWith('Arrow')){e.preventDefault();if(sel<0)sel=40;else{const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
+    sel=Math.max(0,Math.min(8,(sel/9|0)+d[0]))*9+Math.max(0,Math.min(8,sel%9+d[1]))}render()}});
+$('#diff').onchange=newGame;
+newGame();
+</script>
+</body>
+</html>
