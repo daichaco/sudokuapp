@@ -9,10 +9,8 @@
 - ☐ **アプリ名**を決める(第一候補: 数独ヘルパー)。他のアプリと重複すると使えない。手順4で分かる。
 
 ## 1. Apple Developer Program に登録する(いちばん時間がかかる)
-- ☐ https://developer.apple.com/programs/enroll/ から登録する。年額 12,980円。
-- ☐ Apple ID(2ファクタ認証つき)が必要。個人か組織かを選ぶ。個人がいちばん簡単。
-- ☐ 本人確認がある。承認まで数時間〜数日かかることがある。
-- 承認されるまでは、以降の手順(特に3〜6)を進められない。
+- ✅ 登録済み(メンバーシップ有効、Team ID `378N3NJVVA`、個人、年額 12,980円)。
+
 
 ## 2. プライバシーポリシーを公開する(URL が必須)
 - ☐ `docs/privacy-policy.md` の内容を確認する(提供者名は taiki、問い合わせ先は GitHub の Issues にしてある)。変えたい場合は日本語・英語の両方を書き換える。
@@ -23,7 +21,7 @@
 - 注意: リポジトリが非公開(private)だと、無料プランでは Pages を使えない。その場合は別の方法(自分のサイト、Notion の公開ページなど)で公開する。
 
 ## 3. Xcode の署名を設定する(登録の承認後)
-- ☐ Xcode で `SudokuHelper.xcodeproj` を開き、Signing & Capabilities で Team を、登録した(有料の)チームにする。
+- ✅ 確認済み: Team ID `378N3NJVVA` で、App Store 用の署名つき .ipa を書き出せた(Bundle ID の登録と配布用証明書も自動で作成済み)。Xcode の Signing & Capabilities で Team が選ばれていることだけ、目で確認する。
 - ☐ Bundle Identifier が `com.taiki.SudokuHelper` になっていることを確認する。
 - 注意: 今の `project.pbxproj` には、以前の無料チームの ID が入っている。有料チームに変えると書き換わる。
 
