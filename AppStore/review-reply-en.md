@@ -10,7 +10,7 @@ The app has no account registration, login, user-generated content sharing, or p
 Sudoku Helper helps people who are solving number-place (Sudoku) puzzles on paper, in newspapers or on screens. The user photographs a puzzle; the app reads the digits on the device, and the user can correct any mistakes. While solving, the user can ask for a hint: the app highlights the next logical step and explains the reason (e.g. "only place for 5 in this row"), so users learn techniques instead of just seeing the answer. Target audience: casual Sudoku players, especially beginners who get stuck.
 
 **3. How to access the main features**
-No login or account is needed. Launch the app → tap "新しい盤面を始める" (Start a new board) → choose "写真から読み取る" (read from a photo; a Sudoku image from the photo library works) or "手で入力する" (enter manually) → adjust the four corners if needed and tap "読み取る" (Read) → tap "問題として確定" (confirm as puzzle) → tap a cell and a number to fill it, or use the hint button. The camera option is available on a physical device.
+No login or account is needed. Launch the app → tap "新しい盤面を始める" (Start a new board) → choose "写真から読み取る" (read from a photo; a Sudoku image from the photo library works) or "手で入力する" (enter manually) → adjust the four corners if needed and tap "読み取る" (Read) → tap "開始" (Start; confirms the puzzle) → tap a cell and a number to fill it, or use the hint button. The camera option is available on a physical device.
 Any Sudoku image can be used as a sample (a screenshot of a Sudoku puzzle works).
 
 **4. External services / third-party platforms**
