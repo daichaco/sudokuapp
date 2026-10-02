@@ -76,6 +76,63 @@ let hard = "80000000000360000007009020005000700000004570000010003000100006800850
     #expect(HintEngine.mistakes(in: b, given: given).isEmpty)
 }
 
+/// 解が複数ある問題(easy からヒントを減らして作る)と、そのヒントのマス。
+private func ambiguousPuzzle() throws -> (puzzle: Board, given: Set<Int>) {
+    var b = try #require(Board(string: easy))
+    for i in 0..<81 where b.cells[i] != 0 {
+        let kept = b.cells[i]
+        b.cells[i] = 0
+        if Solver.countSolutions(b) > 1 { break }
+        if Solver.countSolutions(b) != 1 { b.cells[i] = kept }
+    }
+    try #require(Solver.countSolutions(b) > 1)
+    return (b, Set((0..<81).filter { b.cells[$0] != 0 }))
+}
+
+@Test func acceptsAlternativeSolutionOfAmbiguousPuzzle() throws {
+    let (puzzle, given) = try ambiguousPuzzle()
+    let first = try #require(Solver.solve(puzzle))
+    // 見つけた解とは違う数字を置いても、解が成り立つマスを探す
+    var alternative: (index: Int, digit: Int)?
+    search: for i in 0..<81 where puzzle.cells[i] == 0 {
+        for d in 1...9 where d != first.cells[i] {
+            var probe = puzzle
+            probe.cells[i] = d
+            if Solver.countSolutions(probe, limit: 1) > 0 { alternative = (i, d); break search }
+        }
+    }
+    let alt = try #require(alternative)
+    var b = puzzle
+    b.cells[alt.index] = alt.digit
+    #expect(HintEngine.mistakes(in: b, given: given).isEmpty)
+}
+
+@Test func stillFlagsImpossibleEntryOfAmbiguousPuzzle() throws {
+    let (puzzle, given) = try ambiguousPuzzle()
+    // どの解でも入らない数字(置くと解がなくなる数字)を探す
+    var impossible: (index: Int, digit: Int)?
+    search: for i in 0..<81 where puzzle.cells[i] == 0 {
+        for d in puzzle.candidates(at: i) {
+            var probe = puzzle
+            probe.cells[i] = d
+            if Solver.countSolutions(probe, limit: 1) == 0 { impossible = (i, d); break search }
+        }
+    }
+    let bad = try #require(impossible)
+    var b = puzzle
+    b.cells[bad.index] = bad.digit
+    #expect(HintEngine.mistakes(in: b, given: given).contains(bad.index))
+}
+
+@Test func stillFlagsDuplicates() throws {
+    let puzzle = try #require(Board(string: easy))
+    let given = Set((0..<81).filter { puzzle.cells[$0] != 0 })
+    var b = puzzle
+    let target = (0..<81).first { puzzle.cells[$0] == 0 }!
+    b.cells[target] = b.cells[(target / 9) * 9 + (target % 9 == 0 ? 1 : 0)]   // 同じ行の数字を重ねる
+    #expect(HintEngine.mistakes(in: b, given: given).contains(target))
+}
+
 @Test func candidates() throws {
     let b = try #require(Board(string: easy))
     #expect(b.candidates(at: 2) == [1, 2, 4])   // 1行3列(0始まり2)

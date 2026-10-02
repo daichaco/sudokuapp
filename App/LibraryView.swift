@@ -11,6 +11,7 @@ struct LibraryView: View {
     @State private var store = GameStore()
     @State private var path: [Route] = []
     @State private var showNewMenu = false
+    @Environment(\.scenePhase) private var scenePhase
 
     struct Route: Hashable {
         let id: UUID
@@ -53,6 +54,9 @@ struct LibraryView: View {
             }
             .onChange(of: path) { _, new in
                 if new.isEmpty { store.removeEmptyRecords() }    // 入力せずに戻った盤面は残さない
+            }
+            .onChange(of: scenePhase) { _, new in
+                if new != .active { store.flush() }    // 裏に回る前に、待っている保存を済ませる
             }
             .onAppear { openSampleIfRequested() }
         }

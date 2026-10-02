@@ -69,8 +69,8 @@ public enum HintEngine {
         return nil
     }
 
-    /// 入力済みの数字のうち、解と食い違うマスのインデックス。
-    /// 解が一意に決まらない/存在しない場合は、重複しているマスを返す。
+    /// 入力済みの数字のうち、どの解にも合わないマスのインデックス。
+    /// 解が複数ある問題では、別の解に合う入力は間違いにしない。解が存在しない場合は、重複しているマスだけを返す。
     public static func mistakes(in board: Board, given: Set<Int> = []) -> [Int] {
         var wrong = Set<Int>()
         for u in Board.units {
@@ -82,8 +82,19 @@ public enum HintEngine {
         var puzzle = board
         for i in 0..<81 where !given.contains(i) { puzzle.cells[i] = 0 }
         if !given.isEmpty, let solution = Solver.solve(puzzle) {
-            for i in 0..<81 where !given.contains(i) && board.cells[i] != 0 && board.cells[i] != solution.cells[i] {
-                wrong.insert(i)
+            let entries = (0..<81).filter { !given.contains($0) && board.cells[$0] != 0 }
+            let differing = entries.filter { board.cells[$0] != solution.cells[$0] }
+            // 見つけた解と違っても、その入力を置いて解ける(別の解がある)なら間違いではない
+            var contradicting = Set<Int>()
+            for i in differing {
+                var probe = puzzle
+                probe.cells[i] = board.cells[i]
+                if Solver.countSolutions(probe, limit: 1) == 0 { contradicting.insert(i) }
+            }
+            wrong.formUnion(contradicting)
+            // 1つずつは別の解に合っていても、全部を合わせると解がなくなる場合は、見つけた解と違う入力を示す
+            if contradicting.isEmpty, board.isConsistent, Solver.countSolutions(board, limit: 1) == 0 {
+                wrong.formUnion(differing)
             }
         }
         return wrong.sorted()

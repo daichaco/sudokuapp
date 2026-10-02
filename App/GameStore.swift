@@ -35,12 +35,14 @@ struct GameRecord: Codable, Identifiable, Equatable {
     }
 }
 
-/// 盤面の一覧を端末に保存する。操作のたびに書き出すので、アプリを閉じても続きから再開できる。
+/// 盤面の一覧を端末に保存する。操作の直後(0.5秒以内)とアプリが裏に回るときに書き出すので、アプリを閉じても続きから再開できる。
 @MainActor
 @Observable
 final class GameStore {
     private(set) var records: [GameRecord] = []
     private let fileURL: URL?
+    private var hasUnsavedChanges = false
+    private var saveTask: Task<Void, Never>?
 
     /// `fileURL` に nil を渡すと保存しない(テスト用)。
     init(fileURL: URL? = GameStore.defaultURL) {
@@ -72,7 +74,14 @@ final class GameStore {
         records[i].snapshot = snapshot
         records[i].history = history
         records[i].updatedAt = Date()
-        save()
+        scheduleSave()
+    }
+
+    /// 未保存の変更があれば、すぐに書き出す。アプリが裏に回るときに呼ぶ。
+    func flush() {
+        saveTask?.cancel()
+        saveTask = nil
+        if hasUnsavedChanges { save() }
     }
 
     func delete(_ id: UUID) {
@@ -95,7 +104,19 @@ final class GameStore {
         records = decoded.filter { $0.snapshot.cells.count == 81 && $0.history.allSatisfy { $0.cells.count == 81 } }
     }
 
+    /// 入力のたびに全盤面を書き出さないよう、少し待ってまとめて保存する。
+    private func scheduleSave() {
+        hasUnsavedChanges = true
+        saveTask?.cancel()
+        saveTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            self?.flush()
+        }
+    }
+
     private func save() {
+        hasUnsavedChanges = false
         guard let fileURL, let data = try? JSONEncoder().encode(records) else { return }
         try? data.write(to: fileURL, options: .atomic)
     }
