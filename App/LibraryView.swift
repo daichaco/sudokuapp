@@ -11,6 +11,8 @@ struct LibraryView: View {
     @State private var store = GameStore()
     @State private var path: [Route] = []
     @State private var showNewMenu = false
+    @State private var showSupport = false
+    @State private var tips = TipStore()
     @Environment(\.scenePhase) private var scenePhase
 
     struct Route: Hashable {
@@ -43,6 +45,14 @@ struct LibraryView: View {
                 }
             }
             .navigationTitle("盤面一覧")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSupport = true } label: { Image(systemName: "heart") }
+                        .accessibilityLabel("開発を応援する")
+                }
+            }
+            .sheet(isPresented: $showSupport) { SupportView(tips: tips) }
+            .task { await tips.finishPendingTransactions() }
             .navigationDestination(for: Route.self) { route in
                 GameContainer(route: route, store: store)
             }

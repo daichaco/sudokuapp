@@ -1,0 +1,68 @@
+{
+  "identifier" : "5D1E8A52",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "160",
+      "familyShareable" : false,
+      "internalID" : "6A7C0E01",
+      "localizations" : [
+        {
+          "description" : "ささやかな応援",
+          "displayName" : "小さな応援",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "com.taiki.SudokuHelper.tip.160",
+      "referenceName" : "Tip 160",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "480",
+      "familyShareable" : false,
+      "internalID" : "6A7C0E02",
+      "localizations" : [
+        {
+          "description" : "コーヒー1杯ぶんの応援",
+          "displayName" : "コーヒー1杯の応援",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "com.taiki.SudokuHelper.tip.480",
+      "referenceName" : "Tip 480",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "1000",
+      "familyShareable" : false,
+      "internalID" : "6A7C0E03",
+      "localizations" : [
+        {
+          "description" : "しっかり応援する",
+          "displayName" : "大きな応援",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "com.taiki.SudokuHelper.tip.1000",
+      "referenceName" : "Tip 1000",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

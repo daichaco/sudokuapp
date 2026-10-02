@@ -1,6 +1,6 @@
 # プライバシーポリシー / Privacy Policy
 
-最終更新日: 2026年9月26日 / Last updated: September 26, 2026
+最終更新日: 2026年10月2日 / Last updated: October 2, 2026
 
 ## 日本語
 
@@ -17,6 +17,10 @@
 ### 端末内に保存する情報
 - 盤面の数字、途中の入力、履歴は、続きから再開できるように、お使いの端末内にだけ保存します。
 - これらの情報は、開発者には送信されません。アプリを削除すると、これらの情報も削除されます。
+
+### 開発を応援する(アプリ内課金)
+- 本アプリには、開発を応援するための任意の支払い(投げ銭)があります。支払っても、アプリの機能は変わりません。
+- 支払いは Apple が処理します。開発者は、お客様のクレジットカードなどの支払い情報や、個人を特定できる購入者の情報を受け取りません。
 
 ### 第三者への提供
 開発者は、お客様の情報を第三者に提供しません。本アプリは、外部の広告・解析サービスを利用していません。
@@ -46,6 +50,10 @@ The Developer does not collect any personal information through the App. The App
 
 ### Data stored on your device
 - Board contents, your entries, and undo history are stored only on your device so you can resume later. They are never sent to the Developer. Deleting the App deletes this data.
+
+### Supporting the developer (in-app purchase)
+- The App offers optional payments (tips) to support the Developer. Paying does not change any feature of the App.
+- Payments are processed by Apple. The Developer does not receive your payment details or any information that identifies you as a purchaser.
 
 ### Sharing with third parties
 The Developer does not share your information with third parties. The App does not use any third-party advertising or analytics services.
